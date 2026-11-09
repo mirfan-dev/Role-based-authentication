@@ -1,6 +1,7 @@
 package com.lcwd.electronic.store.dtos;
 
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -34,9 +35,12 @@ public class UserDto {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
+    @Size(min = 4, max = 6, message = "Invalid gender !!")
+    private String gender;
 
+    @NotBlank(message = "Write something about yourself !!")
+    private String about;
 
-    private Boolean isAccountVerifiedAt;
 
 //    @Pattern
 //    Custom validator

@@ -14,35 +14,14 @@ import java.util.UUID;
 
 @SpringBootApplication
 @EnableCaching
-public class ElectronicStoreApplication implements CommandLineRunner {
+public class ElectronicStoreApplication  {
     public static void main(String[] args) {
         SpringApplication.run(ElectronicStoreApplication.class, args);
     }
 
 
 
-    @Autowired
-    private RoleRepository roleRepository;
 
 
 
-    @Override
-    public void run(String... args) {
-
-        createRoleIfNotExists("ROLE_" + AppConstant.ADMIN_ROLE);
-        createRoleIfNotExists("ROLE_" + AppConstant.GUEST_ROLE);
-    }
-
-    private void createRoleIfNotExists(String roleName) {
-
-        roleRepository.findFirstByRoleName(roleName).ifPresentOrElse(
-                role -> System.out.println(roleName + " already exists"),
-                () -> {
-                    Role role = new Role();
-                    role.setRoleId(UUID.randomUUID().toString());
-                    role.setRoleName(roleName);
-                    roleRepository.save(role);
-                }
-        );
-    }
 }

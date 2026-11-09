@@ -2,11 +2,6 @@ package com.lcwd.electronic.store.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
-
-import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;

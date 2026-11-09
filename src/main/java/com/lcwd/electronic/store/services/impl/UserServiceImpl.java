@@ -8,9 +8,8 @@ import com.lcwd.electronic.store.exceptions.ResourceNotFoundException;
 import com.lcwd.electronic.store.repositories.RoleRepository;
 import com.lcwd.electronic.store.repositories.UserRepository;
 import com.lcwd.electronic.store.services.AuthService;
-import com.lcwd.electronic.store.services.EmailService;
 import com.lcwd.electronic.store.services.UserService;
-import com.lcwd.electronic.store.util.AppConstant;
+import com.lcwd.electronic.store.util.UserHelper;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +23,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -68,12 +69,19 @@ public class UserServiceImpl implements UserService {
         User user =mapper.map(userDto,User.class);
         user.setUserId(UUID.randomUUID().toString());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
+        // Assign default ROLE_USER if no role is provided
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            Role defaultRole = roleRepository.findFirstByRoleName("ROLE_" + AppConstant.GUEST_ROLE)
-                    .orElseThrow(() -> new RuntimeException("Default role not found"));
+
+            Role defaultRole = roleRepository
+                    .findByRoleName("ROLE_USER")
+                    .orElseThrow(() ->
+                            new RuntimeException("ROLE_USER not found in database")
+                    );
+
+            user.setRoles(new HashSet<>());
             user.getRoles().add(defaultRole);
         }
+
 
 
 
@@ -102,6 +110,8 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
         user.setImageName(userDto.getImageName());
+        user.setAbout(userDto.getAbout());
+        user.setGender(userDto.getGender());
         //save data
         User updatedUser = userRepository.save(user);
 
@@ -183,7 +193,15 @@ public Optional<User> findUserByEmailOptional(String email) {
     return userRepository.findByEmail(email);
 }
 
-private UserDto entityToDto(User savedUser) {
+    @Override
+    public ByteArrayInputStream exportDataInExcel() {
+        List<User> all = userRepository.findAll();
+        ByteArrayInputStream byteArrayInputStream = UserHelper.dataToExcel(all);
+
+        return byteArrayInputStream;
+    }
+
+    private UserDto entityToDto(User savedUser) {
 //        UserDto userDto = UserDto.builder()
 //                .userId(savedUser.getUserId())
 //                .name(savedUser.getName())

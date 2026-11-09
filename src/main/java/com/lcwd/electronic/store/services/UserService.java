@@ -5,6 +5,7 @@ import com.lcwd.electronic.store.dtos.UserDto;
 import com.lcwd.electronic.store.entities.User;
 import org.springframework.data.domain.Page;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +39,7 @@ public interface UserService {
     //other user specific features
 
     Optional<User> findUserByEmailOptional(String email);
+
+    public ByteArrayInputStream exportDataInExcel();
 
 }
